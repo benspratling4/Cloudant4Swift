@@ -194,4 +194,49 @@ public class CloudantSession {
 		return task
 	}
 	
+	private func requestForAllDatabaseNames()->URLRequest? {
+		var components:URLComponents = baseUrlComponents
+		components.path = "/_all_dbs"
+		guard let url:URL = components.url else { return nil }
+		return URLRequest(url:url)
+	}
+	
+	
+	public func getAllDatabaseNames(completion:@escaping([String]?)->())->Bool {
+		guard let request:URLRequest = requestForAllDatabaseNames() else { return false }
+		let kickedOff:Bool = task(request: request) { (dataOrNil, responseOrNil, errorOrNil) in
+			guard let data:Data = dataOrNil else {
+				completion(nil)
+				return
+			}
+			let databaseNames:[String]? = try? JSONDecoder().decode([String].self, from: data)
+			completion(databaseNames)
+		}
+		if !kickedOff {
+			completion(nil)
+		}
+		return kickedOff
+	}
+	
+	
+	public static let disallowedDatabaseNameCharacters:CharacterSet =  CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyz0123456789_$()+-/").inverted
+	
+	public func createDatabaseNamed(_ name:String, completion:@escaping(_ created:Bool, _ alreadyExists:Bool)->())->Bool {
+		if name.rangeOfCharacter(from:CloudantSession.disallowedDatabaseNameCharacters) != nil {
+			return false
+		}
+		var components:URLComponents = baseUrlComponents
+		components.path = "/" + name
+		guard let url:URL = components.url else { return false }
+		var request:URLRequest = URLRequest(url:url)
+		request.httpMethod = "PUT"
+		return task(request: request, completion: { (_, responseOrNil, _) in
+			guard let response:HTTPURLResponse = responseOrNil as? HTTPURLResponse else{
+				completion(false, false)
+				return
+			}
+			completion(response.statusCode > 200 && response.statusCode < 203, response.statusCode == 412)
+		})
+	}
+	
 }
