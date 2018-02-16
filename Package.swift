@@ -14,6 +14,10 @@ let package = Package(
 		.target(
 			name: "Cloudant4Swift",
 			dependencies: ["SwiftPatterns"])
+		,.testTarget(
+		name:"Cloudant4SwiftTests"
+		,dependencies:["Cloudant4Swift"]
+		)
 		],
 	swiftLanguageVersions:[4]
 )

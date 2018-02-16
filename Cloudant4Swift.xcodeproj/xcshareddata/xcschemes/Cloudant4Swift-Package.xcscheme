@@ -43,6 +43,16 @@
       language = ""
       shouldUseLaunchSchemeArgsEnv = "YES">
       <Testables>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "Cloudant4Swift::Cloudant4SwiftTests"
+               BuildableName = "Cloudant4SwiftTests.xctest"
+               BlueprintName = "Cloudant4SwiftTests"
+               ReferencedContainer = "container:Cloudant4Swift.xcodeproj">
+            </BuildableReference>
+         </TestableReference>
       </Testables>
       <AdditionalOptions>
       </AdditionalOptions>

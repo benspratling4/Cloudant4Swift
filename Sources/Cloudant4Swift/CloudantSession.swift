@@ -46,6 +46,19 @@ public class CloudantSession {
 		urlSession.invalidateAndCancel()
 	}
 	
+	///from cloudant credentials, for instance
+	public convenience init?(uri:String) {
+		guard let components:URLComponents = URLComponents(string: uri)
+			,let hostPrefix:String = components.host?.components(separatedBy: ".cloudant.com").first
+			,!hostPrefix.isEmpty
+			,let userName:String = components.user
+			,let password:String = components.password
+			else { return nil }
+		self.init(host: hostPrefix, credentials: CloudantCredentials(username: userName, password: password))
+	}
+	
+	
+	
 	//todo: add authentication & negotiation
 	private var credentials:CloudantCredentials
 	
